@@ -16,27 +16,28 @@ struct ContentView: View {
     var body: some View {
         
         VStack {
-            Spacer()
+//            Spacer()
+            
+            Text(message)
+                .font(.largeTitle)
+                .fontWeight(.heavy)
+                .foregroundStyle(.red)
+                .multilineTextAlignment(.center)
+                .minimumScaleFactor(0.5)
+                .frame(height: 100)
+                .animation(.easeInOut(duration: 0.15), value: message)
             
             Image(imageName)
                 .resizable()
                 .scaledToFit()
                 .clipShape(RoundedRectangle(cornerRadius: 30))
                 .shadow(radius: 30)
-            Text(message)
-                .font(.largeTitle)
-                .fontWeight(.heavy)
-                .foregroundStyle(.red)
-                .multilineTextAlignment(.center)
-            
+                .animation(.default, value: imageName)
+
             Spacer()
             
             
-            Button("Press Me!") {
-//                let message1 = "You are Awesome!"
-//                let message2 = "You are Great!"
-//                
-//                message = (message == message1 ? message2 : message1)
+            Button("Show Message") {
                 
                 let messages = ["You are Awesome!",
                                 "You are Great!",
