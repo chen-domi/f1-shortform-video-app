@@ -15,6 +15,7 @@ struct ContentView: View {
     @State private var lastImageNumber = -1
     @State private var lastSoundNumber = -1
     @State private var audioPlayer: AVAudioPlayer!
+    @State private var soundIsOn = true
     let numberOfImages = 10
     let numberOfSounds = 6
 
@@ -42,33 +43,49 @@ struct ContentView: View {
 
             Spacer()
             
-            
-            Button("Show Message") {
+            HStack {
+                Text("Sound On:")
+                Toggle("", isOn: $soundIsOn)
+                    .labelsHidden()
+                    .onChange(of: soundIsOn) {
+                        if audioPlayer != nil && audioPlayer.isPlaying {
+                                audioPlayer.stop()
+                        }
+                    }
                 
-                let messages = ["You are Awesome!",
-                                "You are Great!",
-                                "You are Amazing!",
-                                "You are Fantastic!",
-                                "You make me smile!",
-                                "When the Genius Bar needs help, They Call You!"]
+                Spacer()
                 
-                lastMessageNumber = nonRepeatingRandom(lastNumber: lastMessageNumber, upperBound: messages.count - 1)
-                message = messages[lastMessageNumber]
-                
-                lastImageNumber = nonRepeatingRandom(lastNumber: lastImageNumber, upperBound: numberOfImages - 1)
-                imageName = "image\(lastImageNumber)"
-                
-                lastSoundNumber = nonRepeatingRandom(lastNumber: lastSoundNumber, upperBound: numberOfSounds - 1)
-                playSound(soundName: "sound\(lastSoundNumber)")
+                Button("Show Message") {
+                    
+                    let messages = ["You are Awesome!",
+                                    "You are Great!",
+                                    "You are Amazing!",
+                                    "You are Fantastic!",
+                                    "You make me smile!",
+                                    "When the Genius Bar needs help, They Call You!"]
+                    
+                    lastMessageNumber = nonRepeatingRandom(lastNumber: lastMessageNumber, upperBound: messages.count - 1)
+                    message = messages[lastMessageNumber]
+                    
+                    lastImageNumber = nonRepeatingRandom(lastNumber: lastImageNumber, upperBound: numberOfImages - 1)
+                    imageName = "image\(lastImageNumber)"
+                    
+                    lastSoundNumber = nonRepeatingRandom(lastNumber: lastSoundNumber, upperBound: numberOfSounds - 1)
+                    
+                    if soundIsOn {
+                            playSound(playSound: "sound\(lastSoundNumber)")
+                    }
+                }
+                .buttonStyle(.borderedProminent)
+                .font(.title2)
+                .buttonBorderShape(.roundedRectangle)
                 
             }
-            .buttonStyle(.borderedProminent)
-            .font(.title2)
-            .buttonBorderShape(.roundedRectangle)
         }
         .padding()
         
     }
+    
     func nonRepeatingRandom(lastNumber: Int, upperBound: Int) -> Int {
         var newNumber: Int
         repeat {
@@ -77,9 +94,12 @@ struct ContentView: View {
         return newNumber
     }
     
-    func playSound(soundName: String) {
-        guard let soundFile = NSDataAsset(name: soundName) else {
-            print("😡 Could not read file named \(soundName)")
+    func playSound(playSound: String) {
+        if audioPlayer != nil && audioPlayer.isPlaying {
+            audioPlayer.stop()
+        }
+        guard let soundFile = NSDataAsset(name: playSound) else {
+            print("😡 Could not read file name \(lastSoundNumber)")
             return
         }
         
@@ -87,7 +107,8 @@ struct ContentView: View {
             audioPlayer = try AVAudioPlayer(data: soundFile.data)
             audioPlayer.play()
         } catch {
-            print("😡 ERROR: \(error.localizedDescription) creating audioPlayer")
+            print("😡 ERROR:  \(error.localizedDescription)")
+            
         }
     }
 }
