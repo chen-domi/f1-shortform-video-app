@@ -34,6 +34,8 @@ struct ContentView: View {
                 .frame(height: 100)
                 .animation(.easeInOut(duration: 0.15), value: message)
             
+            Spacer()
+            
             Image(imageName)
                 .resizable()
                 .scaledToFit()
@@ -79,9 +81,9 @@ struct ContentView: View {
                 .buttonStyle(.borderedProminent)
                 .font(.title2)
                 .buttonBorderShape(.roundedRectangle)
-                
             }
         }
+        .tint(.accentColor)
         .padding()
         
     }
