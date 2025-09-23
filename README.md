@@ -1,6 +1,10 @@
-App for Ch.1 of Prof G's SwiftUI Course!
+Formula 1 Moments iOS Application
 
-<img width=auto height="400" alt="image" src="https://github.com/user-attachments/assets/0f9c38e3-4132-49ea-a144-329e99a5f758" />
-<img width=auto height="400" alt="image" src="https://github.com/user-attachments/assets/60de3ded-0636-4b76-b3a2-ffe96bdbc97f" />
-<img width=auto height="400" alt="image" src="https://github.com/user-attachments/assets/e9de6fdd-8afd-41bb-af68-29c09e8546bc" />
+<img width="261" height="500" alt="image" src="https://github.com/user-attachments/assets/cabf694d-f29d-4ecb-8fb7-6bd1799009cd" />
+<img width="258" height="500" alt="image" src="https://github.com/user-attachments/assets/92f7dfc4-1261-4260-885a-cbfa3c584817" />
+<img width="263" height="500" alt="image" src="https://github.com/user-attachments/assets/0365befa-a31e-41b2-a00a-7b842ea8fc0a" />
+<img width="266" height="500" alt="image" src="https://github.com/user-attachments/assets/d4614f7f-6925-4d4e-a4da-274d5c946ae6" />
+
+
+
 
