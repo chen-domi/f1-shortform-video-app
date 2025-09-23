@@ -24,7 +24,7 @@ struct ContentView: View {
                  videoName: "is-there-a-leakage"),
         F1Moment(text: "Where am I supposed to go???",
                  videoName: "sergio-checo-perez"),
-        F1Moment(text: "Oscar Pastry!",
+        F1Moment(text: "Oscar Pastry🥐",
                  videoName: "griddy"),
         F1Moment(text: "Dutch National Anthem",
                  videoName: "dududu"),
@@ -108,16 +108,29 @@ struct ContentView: View {
     }
     
     func loadVideo(videoName: String) {
-        guard let videoURL = Bundle.main.url(forResource: videoName, withExtension: "mov") else {
-            print("🎥 Could not find video file: \(videoName).mov")
+        let extensions = ["mov", "mp4", "MOV", "MP4"]
+        var videoURL: URL?
+        
+        for ext in extensions {
+            if let url = Bundle.main.url(forResource: videoName, withExtension: ext) {
+                videoURL = url
+                print("✅ Found video: \(videoName).\(ext)")
+                break
+            }
+        }
+        
+        guard let validURL = videoURL else {
+            print("🎥 Could not find video file with any extension: \(videoName)")
             return
         }
         
-        player = AVPlayer(url: videoURL)
+        player = AVPlayer(url: validURL)
         updateSoundState(isOn: soundIsOn)
+        
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
             player?.play()
+            
         }
     }
     func updateSoundState(isOn: Bool) {
