@@ -6,77 +6,84 @@
 //
 
 import SwiftUI
+import AVKit
 import AVFAudio
 
+struct F1Moment {
+    let text: String
+    let videoName: String
+}
 struct ContentView: View {
-    @State private var message = ""
-    @State private var imageName = ""
-    @State private var lastMessageNumber = -1
-    @State private var lastImageNumber = -1
-    @State private var lastSoundNumber = -1
-    @State private var audioPlayer: AVAudioPlayer!
+    @State private var currentMoment: F1Moment = F1Moment(text: "", videoName: "")
+    @State private var lastMomentIndex = -1
+    @State private var player: AVPlayer!
     @State private var soundIsOn = true
-    let numberOfImages = 10
-    let numberOfSounds = 6
-
+    
+    let f1Moments = [
+        F1Moment(text: "Words of wisdom",
+                 videoName: "is-there-a-leakage"),
+        F1Moment(text: "Where am I supposed to go???",
+                 videoName: "sergio-checo-perez"),
+        F1Moment(text: "Oscar Pastry!",
+                 videoName: "griddy"),
+        F1Moment(text: "Dutch National Anthem",
+                 videoName: "dududu"),
+        F1Moment(text: "High Performance Athlete",
+                 videoName: "kikiki"),
+        F1Moment(text: "I am stupid x2",
+                 videoName: "i-am-stupid"),
+        F1Moment(text: "No Michael, no no!",
+                 videoName: "no-michael"),
+        F1Moment(text: "SMOOOOOOTH OPERATOR",
+                 videoName: "smooth-operator"),
+    ]
     
     var body: some View {
-        
         VStack {
-//            Spacer()
-            
-            Text(message)
+            //            Spacer()
+            Text(currentMoment.text)
                 .font(.largeTitle)
                 .fontWeight(.heavy)
                 .foregroundStyle(.red)
                 .multilineTextAlignment(.center)
                 .minimumScaleFactor(0.5)
                 .frame(height: 100)
-                .animation(.easeInOut(duration: 0.15), value: message)
+                .animation(.easeInOut(duration: 0.15), value: currentMoment.text)
             
             Spacer()
             
-            Image(imageName)
-                .resizable()
-                .scaledToFit()
-                .clipShape(RoundedRectangle(cornerRadius: 30))
-                .shadow(radius: 30)
-                .animation(.default, value: imageName)
-
+            if let player = player {
+                VideoPlayer(player: player)
+                    .frame(maxHeight: 400)
+                    .clipShape(RoundedRectangle(cornerRadius: 30))
+                    .shadow(radius: 30)
+                    .onAppear() {
+                        player.play()
+                    }
+            } else {
+                RoundedRectangle(cornerRadius: 30)
+                    .fill(Color.gray.opacity(0.3))
+                    .frame(maxHeight: 400)
+                    .overlay(
+                        Text("Tap 'Show F1 Moments' to start")
+                            .foregroundStyle(.gray)
+                    )
+            }
+            
             Spacer()
             
             HStack {
                 Text("Sound On:")
                 Toggle("", isOn: $soundIsOn)
                     .labelsHidden()
-                    .onChange(of: soundIsOn) {
-                        if audioPlayer != nil && audioPlayer.isPlaying {
-                                audioPlayer.stop()
-                        }
+                    .onChange(of: soundIsOn) {_, newValue in
+                        updateSoundState(isOn: newValue)
                     }
                 
                 Spacer()
                 
-                Button("Show Message") {
-                    
-                    let messages = ["You are Awesome!",
-                                    "You are Great!",
-                                    "You are Amazing!",
-                                    "You are Fantastic!",
-                                    "You make me smile!",
-                                    "When the Genius Bar needs help, They Call You!"]
-                    
-                    lastMessageNumber = nonRepeatingRandom(lastNumber: lastMessageNumber, upperBound: messages.count - 1)
-                    message = messages[lastMessageNumber]
-                    
-                    lastImageNumber = nonRepeatingRandom(lastNumber: lastImageNumber, upperBound: numberOfImages - 1)
-                    imageName = "image\(lastImageNumber)"
-                    
-                    lastSoundNumber = nonRepeatingRandom(lastNumber: lastSoundNumber, upperBound: numberOfSounds - 1)
-                    
-                    if soundIsOn {
-                            playSound(playSound: "sound\(lastSoundNumber)")
-                    }
+                Button("Show F1 Moments") {
+                    showRandomMoment()
                 }
                 .buttonStyle(.borderedProminent)
                 .font(.title2)
@@ -85,33 +92,52 @@ struct ContentView: View {
         }
         .tint(.accentColor)
         .padding()
+        .onDisappear {
+            player?.pause()
+        }
+    }
+    
+    func showRandomMoment() {
+        player?.pause()
         
+        lastMomentIndex = nonRepeatingRandom(lastNumber: lastMomentIndex, upperBound: f1Moments.count)
+        
+        currentMoment = f1Moments[lastMomentIndex]
+        
+        loadVideo(videoName: currentMoment.videoName)
+    }
+    
+    func loadVideo(videoName: String) {
+        guard let videoURL = Bundle.main.url(forResource: videoName, withExtension: "mov") else {
+            print("🎥 Could not find video file: \(videoName).mov")
+            return
+        }
+        
+        player = AVPlayer(url: videoURL)
+        updateSoundState(isOn: soundIsOn)
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            player?.play()
+        }
+    }
+    func updateSoundState(isOn: Bool) {
+        guard let player = player else {return}
+        
+        if isOn {
+            player.isMuted = false
+            player.volume = 1.0
+        } else {
+            player.isMuted = true
+            player.volume = 0.0
+        }
     }
     
     func nonRepeatingRandom(lastNumber: Int, upperBound: Int) -> Int {
         var newNumber: Int
         repeat {
             newNumber = Int.random(in: 0...(upperBound - 1))
-        } while newNumber == lastNumber
+        } while newNumber == lastNumber && upperBound > 1
         return newNumber
-    }
-    
-    func playSound(playSound: String) {
-        if audioPlayer != nil && audioPlayer.isPlaying {
-            audioPlayer.stop()
-        }
-        guard let soundFile = NSDataAsset(name: playSound) else {
-            print("😡 Could not read file name \(lastSoundNumber)")
-            return
-        }
-        
-        do {
-            audioPlayer = try AVAudioPlayer(data: soundFile.data)
-            audioPlayer.play()
-        } catch {
-            print("😡 ERROR:  \(error.localizedDescription)")
-            
-        }
     }
 }
 
