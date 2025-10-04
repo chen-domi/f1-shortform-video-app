@@ -1,5 +1,7 @@
 Formula 1 Moments iOS Application
 
+As a big fan of Formula 1, I created an app to easily be able to see some of my favorite F1 moments with a click of a button!
+
 This iOS app plays .mov or .mp4 with a click of a button.
 Implented with an algorithm that does not allow the same consecutive video to be played and has a button to toggle volume on or off.
 
